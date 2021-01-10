@@ -1,16 +1,15 @@
 import * as tf from '@tensorflow/tfjs'
-// import '@tensorflow/tfjs-node'
-import path from 'path'
+import '@tensorflow/tfjs-node-gpu'
 
 (async () => {
   try {
     /**
      * 1. 가르칠 데이터를 마련한다
      */
-    const 온도 = [ 20, 21, 22, 23 ]
-    const 판매량 = [ 40, 42, 44, 46 ]
-    const 원인 = tf.tensor(온도)
-    const 결과 = tf.tensor(판매량)
+    const temps = [ 20, 21, 22, 23 ]
+    const sells = [ 40, 42, 44, 46 ]
+    const causes = tf.tensor(temps)
+    const results = tf.tensor(sells)
 
     /**
      * 2. 모델의 모양을 만든다
@@ -41,15 +40,15 @@ import path from 'path'
         onEpochEnd (epoch: number, logs: tf.Logs = {loss: 0}) {
           // 평균 제곱 오차에 루트를 씌우면 평균 제곱근 오차가 된다.
           // 평균 제곱근 오차가 0에 가까워질수록 학습이 잘 된 것으로 보면 된다.
-          console.log(epoch, logs, 'RMSE => ', Math.sqrt(logs.loss));
+          // console.log(epoch, logs, 'RMSE => ', Math.sqrt(logs.loss));
         }
       }
     }
-    await model.fit(원인 as any, 결과 as any, fitParam)
+    await model.fit(causes as any, results as any, fitParam)
 
     // 4. 모델을 이용한다.
     // 4.1 기존의 데이터를 이용
-    const predicts = model.predict(원인 as any);
+    const predicts = model.predict(causes as any);
 
     // 5. 모델의 실체는 입력값 * 가중치 + bias로 나타나는 1차함수
     // @ts-ignore
@@ -61,7 +60,7 @@ import path from 'path'
     console.log(predicts.toString());
 
     // 6. 모델을 저장한다
-    await model.save(`file://${path.join(process.cwd(), 'hello-tsjs-model')}`)
+    await model.save(`file://./hello-tsjs-model`)
 
     console.log('종료');
   } catch (e) {
@@ -71,9 +70,9 @@ import path from 'path'
 // /**
 //  * 4. 새로운 데이터를 이용한다
 //  */k
-// const 다음주온도 = [15, 16, 17, 18, 19]
-// const 다음주원인 = tf.tensor(다음주온도)
-// const 다음주결과 = model.predict(다음주원인)
-// 다음주원인.print()
+// const 다음주temps = [15, 16, 17, 18, 19]
+// const 다음주causes = tf.tensor(다음주temps)
+// const 다음주results = model.predict(다음주causes)
+// 다음주causes.print()
 })()
 
